@@ -707,16 +707,48 @@ curl -X POST http://localhost:8000/v1/guardrails/analyze \
         }
 
         async function executeRAGQuery() {
-            const query = document.getElementById('ragQueryInput').value;
-            const cutoff = document.getElementById('ragScoreCutoff').value;
-            const topK = document.getElementById('ragTopK').value;
+            const query = document.getElementById('ragQueryInput').value.trim() || "API Token Security Guidelines";
+            const cutoff = parseFloat(document.getElementById('ragScoreCutoff').value || "0.75");
+            const topK = parseInt(document.getElementById('ragTopK').value || "5");
+            const resultsBox = document.getElementById('ragResultsBox');
 
             document.getElementById('ragCountBadge').innerText = "Searching Qdrant Vector Store...";
-            
+
             setTimeout(() => {
-                document.getElementById('ragCountBadge').innerText = `${topK} Chunks Found (Score >= ${cutoff})`;
-                showToast(`🔍 Vector Search complete for: "${query.substring(0, 25)}..."`);
-            }, 300);
+                document.getElementById('ragCountBadge').innerText = `${topK} Results Found (Score >= ${cutoff})`;
+                
+                // Dynamically generate vector chunks matching the user's custom query!
+                const dynamicChunks = generateDynamicRAGChunks(query, topK, cutoff);
+                resultsBox.innerHTML = dynamicChunks;
+
+                showToast(`🔍 Vector Search Complete! Generated ${topK} knowledge chunks for '${query.substring(0, 20)}...'`);
+            }, 250);
+        }
+
+        function generateDynamicRAGChunks(query, count, minScore) {
+            const sources = [
+                "Security_Policy_v4.pdf", "Architecture_Spec_2026.md", "Compliance_Audit_2026.pdf",
+                "API_Token_Rules.json", "Telemetry_Pipeline_Docs.md", "Agent_Graph_Spec.pdf"
+            ];
+            
+            let html = "";
+            let baseScore = 96.5;
+
+            for (let i = 0; i < count; i++) {
+                let score = Math.max((baseScore - i * 4.2), minScore * 100).toFixed(1);
+                let source = sources[i % sources.length];
+                let color = score >= 90 ? "var(--accent-green)" : (score >= 80 ? "var(--accent-cyan)" : "var(--accent-amber)");
+
+                html += `
+                <div class="rag-chunk">
+                    <div class="rag-meta">
+                        <span>📄 Source: ${source}</span>
+                        <span style="color: ${color}; font-weight: 600;">Cosine Similarity: ${score}%</span>
+                    </div>
+                    <p style="font-size: 13px;">Grounded Context Chunk #${i+1} for query "<em>${query}</em>": Enterprise security enforcement mandates strict rate-limiting and Presidio PII redaction on all edge vector embeddings.</p>
+                </div>`;
+            }
+            return html;
         }
 
         function toggleAutoStream() {
