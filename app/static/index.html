@@ -707,7 +707,8 @@ curl -X POST http://localhost:8000/v1/guardrails/analyze \
         }
 
         async function executeRAGQuery() {
-            const query = document.getElementById('ragQueryInput').value.trim() || "API Token Security Guidelines";
+            let rawQuery = document.getElementById('ragQueryInput').value.trim() || "API Token Security Guidelines";
+            const cleanQuery = rawQuery.replace(/^["'\s]+|["'\s]+$/g, '');
             const cutoff = parseFloat(document.getElementById('ragScoreCutoff').value || "0.75");
             const topK = parseInt(document.getElementById('ragTopK').value || "5");
             const resultsBox = document.getElementById('ragResultsBox');
@@ -718,17 +719,29 @@ curl -X POST http://localhost:8000/v1/guardrails/analyze \
                 document.getElementById('ragCountBadge').innerText = `${topK} Results Found (Score >= ${cutoff})`;
                 
                 // Dynamically generate vector chunks matching the user's custom query!
-                const dynamicChunks = generateDynamicRAGChunks(query, topK, cutoff);
+                const dynamicChunks = generateDynamicRAGChunks(cleanQuery, topK, cutoff);
                 resultsBox.innerHTML = dynamicChunks;
 
-                showToast(`🔍 Vector Search Complete! Generated ${topK} knowledge chunks for '${query.substring(0, 20)}...'`);
+                showToast(`🔍 Vector Search Complete! Generated ${topK} knowledge chunks for '${cleanQuery.substring(0, 25)}...'`);
             }, 250);
         }
 
         function generateDynamicRAGChunks(query, count, minScore) {
             const sources = [
-                "Security_Policy_v4.pdf", "Architecture_Spec_2026.md", "Compliance_Audit_2026.pdf",
-                "API_Token_Rules.json", "Telemetry_Pipeline_Docs.md", "Agent_Graph_Spec.pdf"
+                "ClickHouse_Logging_Architecture.md", 
+                "Security_Policy_v4.pdf", 
+                "Presidio_PII_Redaction_Spec.pdf",
+                "Qdrant_Vector_Index_Config.json", 
+                "Kafka_Telemetry_Consumer.java", 
+                "SynapseMesh_Graph_Memory.py"
+            ];
+
+            const snippets = [
+                `ClickHouse OLAP tables store high-speed telemetry events via Spring JDBC batch inserts with sub-2ms write latencies.`,
+                `Enterprise security rules mandate strict edge proxy PII redaction and Presidio token masking before vector indexing.`,
+                `Qdrant 768-dimensional vector similarity embeddings maintain grounded context with cosine similarity scores above ${minScore}.`,
+                `Spring Boot IngestionController batches incoming Kafka telemetry events into ClickHouse OLAP partitions seamlessly.`,
+                `Neo4j Knowledge Graph Memory stores multi-agent execution paths using Cypher nodes and directional task edges.`
             ];
             
             let html = "";
@@ -737,6 +750,7 @@ curl -X POST http://localhost:8000/v1/guardrails/analyze \
             for (let i = 0; i < count; i++) {
                 let score = Math.max((baseScore - i * 4.2), minScore * 100).toFixed(1);
                 let source = sources[i % sources.length];
+                let snippet = snippets[i % snippets.length];
                 let color = score >= 90 ? "var(--accent-green)" : (score >= 80 ? "var(--accent-cyan)" : "var(--accent-amber)");
 
                 html += `
@@ -745,7 +759,7 @@ curl -X POST http://localhost:8000/v1/guardrails/analyze \
                         <span>📄 Source: ${source}</span>
                         <span style="color: ${color}; font-weight: 600;">Cosine Similarity: ${score}%</span>
                     </div>
-                    <p style="font-size: 13px;">Grounded Context Chunk #${i+1} for query "<em>${query}</em>": Enterprise security enforcement mandates strict rate-limiting and Presidio PII redaction on all edge vector embeddings.</p>
+                    <p style="font-size: 13px;">Grounded Context Chunk #${i+1} for query "<em>${query}</em>": ${snippet}</p>
                 </div>`;
             }
             return html;
