@@ -3,6 +3,9 @@ import uuid
 import logging
 from typing import List, Dict, Any, Optional
 from fastapi import FastAPI, HTTPException, status, Depends, Header
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 
 from app.config import settings
 from app.guardrails.pii_redactor import PIIRedactor
@@ -27,6 +30,11 @@ app = FastAPI(
     description="Enterprise RAG Retrieval Engine & Real-Time AI Guardrail Middleware"
 )
 
+# Mount Static Files
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
 # Initialize Core Services
 pii_redactor = PIIRedactor()
 policy_checker = PolicyChecker()
@@ -36,7 +44,14 @@ vector_store = VectorStoreEngine()
 kafka_producer = KafkaTelemetryProducer()
 clickhouse_logger = ClickHouseTelemetryLogger()
 
-@app.get("/", tags=["Health Check"])
+@app.get("/", tags=["Dashboard"])
+def get_dashboard():
+    index_path = os.path.join(static_dir, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return {"app": settings.APP_NAME, "status": "HEALTHY", "version": "1.0.0"}
+
+@app.get("/health", tags=["Health Check"])
 def health_check():
     return {
         "app": settings.APP_NAME,
@@ -47,10 +62,6 @@ def health_check():
 
 @app.post("/v1/guardrails/analyze", response_model=GuardrailResponse, tags=["Guardrails Engine"])
 def analyze_prompt(payload: PromptRequest):
-    """
-    Evaluates raw user prompt against PII Redaction and Policy Injection Guardrails.
-    Asynchronously logs telemetry metrics to Kafka and ClickHouse.
-    """
     if not rate_limiter.is_allowed(payload.tenant_id or "default"):
         raise HTTPException(status_code=429, detail="Rate limit exceeded for tenant")
 
@@ -92,10 +103,6 @@ def analyze_prompt(payload: PromptRequest):
 
 @app.post("/v1/rag/query", response_model=RAGQueryResponse, tags=["RAG Engine"])
 def query_rag(payload: RAGQueryRequest):
-    """
-    Performs vector similarity search against Qdrant knowledge base.
-    Returns grounded context chunks and citations.
-    """
     chunks = vector_store.search_relevant_context(payload.query, payload.top_k)
     return {
         "query": payload.query,
