@@ -6,11 +6,24 @@
 [![Qdrant](https://img.shields.io/badge/Qdrant-v1.8.0-red.svg)](https://qdrant.tech/)
 [![ClickHouse](https://img.shields.io/badge/ClickHouse-24.2-yellow.svg)](https://clickhouse.com/)
 [![Kafka](https://img.shields.io/badge/Kafka-Confluent-black.svg)](https://kafka.apache.org/)
-
 ---
 
-![AegisFlow-AI Dashboard](docs/dashboard.png)
+## 🖥️ Control Center & Live Dashboard Suite
 
+### 1. 🛡️ AI Guardrail & PII Inspector
+![AI Guardrail Inspector](docs/guardrail_inspector.png)
+
+### 2. 🔍 Grounded Vector RAG Retriever (Qdrant)
+![Grounded RAG Retriever](docs/grounded_rag.png)
+
+### 3. 📊 Live Kafka Telemetry & ClickHouse Stream
+![Live Kafka & ClickHouse Stream](docs/kafka_clickhouse_stream.png)
+
+### 4. 🧠 Neo4j Agent Knowledge Graph Memory
+![Neo4j Graph Memory](docs/neo4j_graph.png)
+
+### 5. ⚡ Live API Playground & SDK Code Generator
+![Live API Playground & SDK Tester](docs/api_playground.png)
 
 ## 📌 Executive Summary
 
@@ -24,7 +37,6 @@ It acts as an inline middleware proxy that:
 
 ---
 
-![AegisFlow-AI Dashboard](docs/dashboard.png)
 
 
 ## 🏗️ System Architecture
@@ -51,7 +63,6 @@ It acts as an inline middleware proxy that:
 
 ---
 
-![AegisFlow-AI Dashboard](docs/dashboard.png)
 
 
 ## 🛠️ Technology Stack
@@ -65,7 +76,6 @@ It acts as an inline middleware proxy that:
 
 ---
 
-![AegisFlow-AI Dashboard](docs/dashboard.png)
 
 
 ## 🚀 Quickstart & Setup
@@ -89,7 +99,6 @@ curl http://localhost:8000/
 
 ---
 
-![AegisFlow-AI Dashboard](docs/dashboard.png)
 
 
 ## 📡 API Endpoint Documentation & Examples
@@ -128,7 +137,6 @@ curl -X POST "http://localhost:8000/v1/guardrails/analyze" \
 
 ---
 
-![AegisFlow-AI Dashboard](docs/dashboard.png)
 
 
 ### 🔍 2. Retrieve Grounded RAG Knowledge
@@ -145,12 +153,10 @@ curl -X POST "http://localhost:8000/v1/rag/query" \
 
 ---
 
-![AegisFlow-AI Dashboard](docs/dashboard.png)
 
 
 ---
 
-![AegisFlow-AI Dashboard](docs/dashboard.png)
 
 
 ## Author
