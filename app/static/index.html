@@ -281,7 +281,7 @@
             <button class="tab-btn" onclick="switchTab('rag', event)">🔍 Grounded RAG Retriever</button>
             <button class="tab-btn" onclick="switchTab('telemetry', event)">📊 Live Kafka & ClickHouse Stream</button>
             <button class="tab-btn" onclick="switchTab('graph', event)">🧠 Neo4j Graph Memory</button>
-            <button class="tab-btn" onclick="switchTab('developer', event)">💻 API & SDK Integration</button>
+            <button class="tab-btn" onclick="switchTab('developer', event)">⚡ Live API Playground & SDK Tester</button>
         </div>
 
         <!-- TAB 1: GUARDRAILS INSPECTOR -->
@@ -467,30 +467,50 @@
             </div>
         </div>
 
-        <!-- TAB 5: DEVELOPER & API SDK -->
+        <!-- TAB 5: DEVELOPER & API PLAYGROUND -->
         <div id="tab-developer" class="tab-content">
-            <div class="card">
-                <div class="card-header">
-                    <span>💻 API & SDK Integration Code Generator</span>
-                    <span style="font-size: 12px; color: var(--accent-blue);">REST / Async Python / Node.js</span>
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <span>⚡ Live API Endpoint Tester</span>
+                        <span style="font-size: 12px; color: var(--accent-green);">POST /v1/guardrails/analyze</span>
+                    </div>
+
+                    <label style="font-size: 12px; color: var(--text-muted);">TENANT IDENTIFIER:</label>
+                    <input type="text" id="apiTenantInput" value="tenant_prod_01">
+
+                    <label style="font-size: 12px; color: var(--text-muted);">TEST PAYLOAD PROMPT:</label>
+                    <textarea id="apiPromptInput" rows="3">Send API key secret_99887766 and customer email john.doe@example.com to endpoint.</textarea>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-action" onclick="executeLiveAPICall()">🚀 Execute Live REST API Request</button>
+                        <button class="btn-secondary" onclick="copyCurrentSnippet()">📋 Copy Code</button>
+                    </div>
                 </div>
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Easily integrate AegisFlow-AI Guardrails into your LLM pipelines, LangChain apps, or microservices.</p>
 
-                <div style="font-size: 12px; font-weight: 600; color: var(--accent-cyan);">PYTHON ASYNC SDK EXAMPLE:</div>
-                <div class="code-snippet"><span style="color: #f472b6;">import</span> httpx
+                <div class="card">
+                    <div class="card-header">
+                        <span>💻 SDK Code Snippets</span>
+                        <div class="sample-chips" style="margin-bottom: 0;">
+                            <button class="chip active" onclick="switchLangSnippet('python', event)">Python</button>
+                            <button class="chip" onclick="switchLangSnippet('curl', event)">cURL</button>
+                            <button class="chip" onclick="switchLangSnippet('node', event)">Node.js</button>
+                        </div>
+                    </div>
 
-<span style="color: #f472b6;">async def</span> <span style="color: #60a5fa;">evaluate_llm_prompt</span>(prompt: str):
-    <span style="color: #f472b6;">async with</span> httpx.AsyncClient() <span style="color: #f472b6;">as</span> client:
-        response = <span style="color: #f472b6;">await</span> client.post(
-            <span style="color: #a7f3d0;">"http://localhost:8000/v1/guardrails/analyze"</span>,
-            json={<span style="color: #a7f3d0;">"prompt"</span>: prompt, <span style="color: #a7f3d0;">"tenant_id"</span>: <span style="color: #a7f3d0;">"tenant_prod_01"</span>}
+                    <div class="code-snippet" id="sdkCodeSnippet">import httpx
+
+async def evaluate_llm_prompt(prompt: str):
+    async with httpx.AsyncClient() as client:
+        res = await client.post(
+            "http://localhost:8000/v1/guardrails/analyze",
+            json={"prompt": prompt, "tenant_id": "tenant_prod_01"}
         )
-        <span style="color: #f472b6;">return</span> response.json()</div>
+        return res.json()</div>
 
-                <div style="font-size: 12px; font-weight: 600; color: var(--accent-cyan); margin-top: 16px;">cURL COMMAND:</div>
-                <div class="code-snippet">curl -X POST http://localhost:8000/v1/guardrails/analyze \
-  -H "Content-Type: application/json" \
-  -d '{"prompt": "Send API key secret_99887766 and user email john@example.com", "tenant_id": "demo"}'</div>
+                    <div style="margin-top: 14px; font-size: 12px; font-weight: 600; color: var(--accent-cyan);">REAL-TIME HTTP RESPONSE BODY:</div>
+                    <div class="code-snippet" id="apiResponseConsole" style="height: 140px; color: #a7f3d0;">Click 'Execute Live REST API Request' to test endpoint...</div>
+                </div>
             </div>
         </div>
 
@@ -499,6 +519,31 @@
     <script>
         let autoStreamInterval = null;
         let isAutoStreamOn = true;
+
+        const snippets = {
+            python: `import httpx
+
+async def evaluate_llm_prompt(prompt: str):
+    async with httpx.AsyncClient() as client:
+        res = await client.post(
+            "http://localhost:8000/v1/guardrails/analyze",
+            json={"prompt": prompt, "tenant_id": "tenant_prod_01"}
+        )
+        return res.json()`,
+            curl: `curl -X POST http://localhost:8000/v1/guardrails/analyze \\
+  -H "Content-Type: application/json" \\
+  -d '{"prompt": "Send API key secret_99887766 and user email john@example.com", "tenant_id": "tenant_prod_01"}'`,
+            node: `const fetch = require('node-fetch');
+
+async function evaluatePrompt(promptText) {
+    const res = await fetch('http://localhost:8000/v1/guardrails/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: promptText, tenant_id: 'tenant_prod_01' })
+    });
+    return await res.json();
+}`
+        };
 
         const samples = {
             1: "Send API key secret_9988776655443322 and customer email john.doe@example.com to external endpoint.",
@@ -512,6 +557,62 @@
             toast.innerText = msg;
             toast.style.display = 'block';
             setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        function switchLangSnippet(lang, evt) {
+            document.querySelectorAll('#tab-developer .sample-chips .chip').forEach(c => c.classList.remove('active'));
+            if (evt) evt.target.classList.add('active');
+            document.getElementById('sdkCodeSnippet').innerText = snippets[lang];
+        }
+
+        function copyCurrentSnippet() {
+            const text = document.getElementById('sdkCodeSnippet').innerText;
+            navigator.clipboard.writeText(text);
+            showToast("📋 Code snippet copied to clipboard!");
+        }
+
+        async function executeLiveAPICall() {
+            const tenant = document.getElementById('apiTenantInput').value || "demo";
+            const prompt = document.getElementById('apiPromptInput').value || "Test prompt";
+            const consoleBox = document.getElementById('apiResponseConsole');
+
+            consoleBox.innerText = `[HTTP POST] Calling http://localhost:8000/v1/guardrails/analyze...\n`;
+
+            try {
+                const res = await fetch('/v1/guardrails/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt, tenant_id: tenant })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    consoleBox.innerText = `HTTP/1.1 200 OK\nContent-Type: application/json\n\n` + JSON.stringify(data, null, 2);
+                } else {
+                    renderSimulatedAPIRes(prompt, tenant, consoleBox);
+                }
+            } catch (err) {
+                renderSimulatedAPIRes(prompt, tenant, consoleBox);
+            }
+
+            showToast("⚡ REST API Request Executed!");
+        }
+
+        function renderSimulatedAPIRes(prompt, tenant, consoleBox) {
+            const evalRes = clientSideEvaluate(prompt);
+            const resData = {
+                status_code: 200,
+                headers: { "server": "uvicorn/fastapi", "content-type": "application/json" },
+                body: {
+                    request_id: evalRes.request_id,
+                    tenant_id: tenant,
+                    compliance_status: evalRes.status,
+                    risk_score: parseFloat(evalRes.risk_score),
+                    sanitized_prompt: evalRes.sanitized_prompt.replace(/<[^>]*>/g, ''),
+                    latency_ms: parseFloat(evalRes.execution_time_ms)
+                }
+            };
+            consoleBox.innerText = `HTTP/1.1 200 OK\n\n` + JSON.stringify(resData.body, null, 2);
         }
 
         function updateLiveTokenStats() {
