@@ -1,4 +1,4 @@
-# AegisFlow-AI 🛡️⚡
+﻿# AegisFlow-AI 🛡️⚡
 > **Enterprise RAG Retrieval Engine & Real-Time AI Guardrail Telemetry Pipeline**
 
 [![Python 3.11](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
@@ -127,5 +127,10 @@ curl -X POST "http://localhost:8000/v1/rag/query" \
 
 ---
 
-## 🎯 Resume & Interview Summary
-> *"Architected AegisFlow-AI, an enterprise RAG retrieval and real-time AI guardrail middleware using Python (FastAPI), Qdrant Vector DB, Apache Kafka, and ClickHouse. Built automated PII redaction engines, prompt injection risk scoring, and asynchronous event stream logging."*
+---
+
+## Author
+
+**Spandan Gowda B C**
+* **GitHub**: [@SpandanGowdaBC](https://github.com/SpandanGowdaBC)
+* **Repository**: [AegisFlow-AI](https://github.com/SpandanGowdaBC/aegisflow-ai)
