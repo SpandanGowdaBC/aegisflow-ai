@@ -9,6 +9,9 @@
 
 ---
 
+![AegisFlow-AI Dashboard](docs/dashboard.png)
+
+
 ## 📌 Executive Summary
 
 **AegisFlow-AI** is a production-grade microservice architecture designed to solve core reliability, security, and observability challenges in enterprise Large Language Model (LLM) deployments. 
@@ -20,6 +23,9 @@ It acts as an inline middleware proxy that:
 4. **Asynchronously Streams Analytics Events** to **Apache Kafka** and logs structured records in **ClickHouse** for OLAP observability.
 
 ---
+
+![AegisFlow-AI Dashboard](docs/dashboard.png)
+
 
 ## 🏗️ System Architecture
 
@@ -45,6 +51,9 @@ It acts as an inline middleware proxy that:
 
 ---
 
+![AegisFlow-AI Dashboard](docs/dashboard.png)
+
+
 ## 🛠️ Technology Stack
 
 * **API Engine**: Python 3.11, FastAPI, Pydantic v2
@@ -55,6 +64,9 @@ It acts as an inline middleware proxy that:
 * **Containerization**: Docker, Docker Compose
 
 ---
+
+![AegisFlow-AI Dashboard](docs/dashboard.png)
+
 
 ## 🚀 Quickstart & Setup
 
@@ -76,6 +88,9 @@ curl http://localhost:8000/
 ```
 
 ---
+
+![AegisFlow-AI Dashboard](docs/dashboard.png)
+
 
 ## 📡 API Endpoint Documentation & Examples
 
@@ -113,6 +128,9 @@ curl -X POST "http://localhost:8000/v1/guardrails/analyze" \
 
 ---
 
+![AegisFlow-AI Dashboard](docs/dashboard.png)
+
+
 ### 🔍 2. Retrieve Grounded RAG Knowledge
 **Endpoint:** `POST /v1/rag/query`
 
@@ -127,7 +145,13 @@ curl -X POST "http://localhost:8000/v1/rag/query" \
 
 ---
 
+![AegisFlow-AI Dashboard](docs/dashboard.png)
+
+
 ---
+
+![AegisFlow-AI Dashboard](docs/dashboard.png)
+
 
 ## Author
 
